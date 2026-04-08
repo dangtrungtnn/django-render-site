@@ -1,0 +1,94 @@
+{% extends 'core/base.html' %}
+{% block title %}Cơ cấu tổ chức | {{ site_settings.short_name|default:'CB&DB TNN' }}{% endblock %}
+{% block content %}
+<section class="page-header"><h2>Cơ cấu tổ chức</h2><p>Lãnh đạo, đầu mối và các phòng chuyên môn của Trung tâm.</p></section>
+
+<section class="panel portal-panel">
+    <div class="panel-heading"><h3>Sơ đồ tổ chức dạng khối</h3></div>
+    <div class="org-chart detailed">
+        {% if director %}
+        <div class="org-chart-top">
+            <div class="org-node main">
+                <strong>{{ director.position }}</strong>
+                <span>{{ director.full_name }}</span>
+            </div>
+        </div>
+        {% endif %}
+        {% if deputies %}
+        <div class="org-chart-row three">
+            {% for member in deputies %}
+            <div class="org-node secondary">
+                <strong>{{ member.position }}</strong>
+                <span>{{ member.full_name }}</span>
+                <small>{{ member.department }}</small>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        <div class="org-chart-row units">
+            {% for unit in org_units %}
+            <div class="org-node unit">
+                <strong>{{ unit.name }}</strong>
+                <small>{{ unit.scope|default:unit.unit_type }}</small>
+            </div>
+            {% empty %}
+            <p>Chưa có dữ liệu cơ cấu tổ chức.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="panel portal-panel">
+    <div class="panel-heading"><h3>Lãnh đạo phụ trách từng mảng</h3></div>
+    <div class="assignment-list">
+        {% for item in assignments %}
+        <article class="assignment-card large">
+            <div>
+                <h4>{{ item.title }}</h4>
+                {% if item.lead %}<p class="meta">Phụ trách chính: <strong>{{ item.lead.full_name }}</strong> - {{ item.lead.position }}</p>{% endif %}
+                {% if item.supporting_text %}<p class="meta">Phối hợp: {{ item.supporting_text }}</p>{% endif %}
+            </div>
+            <p>{{ item.description|linebreaks }}</p>
+        </article>
+        {% empty %}
+        <p>Chưa có dữ liệu phân công phụ trách.</p>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="panel portal-panel">
+    <div class="panel-heading"><h3>Các phòng chuyên môn</h3></div>
+    <div class="org-unit-grid">
+        {% for unit in org_units %}
+        <article class="org-card">
+            <h4>{{ unit.name }}</h4>
+            <p class="meta">{{ unit.unit_type }}{% if unit.scope %} · {{ unit.scope }}{% endif %}</p>
+            <p>{{ unit.duties_summary|linebreaks }}</p>
+        </article>
+        {% empty %}
+        <p>Chưa có dữ liệu cơ cấu tổ chức.</p>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="page-header"><h2>Lãnh đạo / đầu mối</h2><p>Danh sách có thể cập nhật thêm trong Admin.</p></section>
+<section class="leader-grid full">
+    {% for member in members %}
+    <article class="leader-card gov">
+        {% if member.photo %}
+        <img src="{{ member.photo.url }}" alt="{{ member.full_name }}">
+        {% else %}
+        <div class="leader-placeholder">{{ member.full_name|slice:':1' }}</div>
+        {% endif %}
+        <h4>{{ member.full_name }}</h4>
+        <p>{{ member.position }}</p>
+        <span>{{ member.department }}</span>
+        {% if member.bio %}<div class="member-bio">{{ member.bio|truncatechars:180 }}</div>{% endif %}
+        {% if member.email %}<small>Email: {{ member.email }}</small>{% endif %}
+        {% if member.phone %}<small>Điện thoại: {{ member.phone }}</small>{% endif %}
+    </article>
+    {% empty %}
+    <p>Chưa có dữ liệu lãnh đạo/nhân sự. Vào /admin để thêm mới.</p>
+    {% endfor %}
+</section>
+{% endblock %}

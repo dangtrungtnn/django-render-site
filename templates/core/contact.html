@@ -1,0 +1,26 @@
+{% extends 'core/base.html' %}
+{% block title %}Liên hệ | {{ site_settings.short_name|default:'CB&DB TNN' }}{% endblock %}
+{% block content %}
+<section class="page-header"><h2>Liên hệ</h2><p>Đầu mối liên hệ và thông tin hành chính.</p></section>
+<section class="contact-grid">
+    <div class="panel article-panel">
+        <h3>Thông tin liên hệ</h3>
+        <p><strong>Đơn vị:</strong> {{ site_settings.unit_name }}</p>
+        <p><strong>Trực thuộc:</strong> {{ site_settings.parent_unit|default:'Chưa cập nhật' }}</p>
+        <p><strong>Địa chỉ:</strong> {{ site_settings.address|default:'Chưa cập nhật' }}</p>
+        <p><strong>Điện thoại:</strong> {{ site_settings.hotline|default:'Chưa cập nhật' }}</p>
+        <p><strong>Email:</strong> {{ site_settings.email|default:'Chưa cập nhật' }}</p>
+        <p><strong>Website:</strong> {{ site_settings.website|default:'Chưa cập nhật' }}</p>
+    </div>
+    <div class="panel article-panel">
+        <h3>Hướng dẫn quản trị nhanh</h3>
+        <ol class="steps-list">
+            <li>Vào <strong>/admin</strong> để đăng nhập quản trị.</li>
+            <li>Cập nhật <strong>Thông tin đơn vị</strong> để thay đổi nội dung chung toàn site.</li>
+            <li>Thêm <strong>Phòng/Bộ phận</strong> để quản lý cơ cấu tổ chức.</li>
+            <li>Thêm <strong>Thông báo nổi bật</strong>, <strong>Tin tức</strong>, <strong>Tài liệu PDF</strong>.</li>
+            <li>Thêm <strong>Banner trang chủ</strong> để hiển thị slideshow.</li>
+        </ol>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: tccbdb-portal
+    env: python
+    plan: free
+    buildCommand: ./build.sh
+    startCommand: gunicorn config.wsgi:application
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: PYTHON_VERSION
+        value: "3.11.11"
+      - key: WEB_CONCURRENCY
+        value: "2"

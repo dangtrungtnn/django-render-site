@@ -1,0 +1,31 @@
+{% extends 'core/base.html' %}
+{% block title %}Bản tin | {{ site_settings.short_name|default:'NAWAPI' }}{% endblock %}
+{% block content %}
+<section class="page-header"><h2>Bản tin tháng / mùa / năm / chuyên đề</h2></section>
+<form method="get" class="search-form search-inline">
+    <input type="text" name="q" value="{{ query }}" placeholder="Tìm theo tiêu đề, kỳ bản tin hoặc nội dung...">
+    <select name="type">
+        <option value="">Tất cả loại bản tin</option>
+        {% for code, label in type_choices %}
+        <option value="{{ code }}" {% if selected_type == code %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit">Lọc</button>
+</form>
+<div class="bulletin-card-grid">
+    {% for item in bulletins %}
+    <article class="bulletin-card">
+        <div class="bulletin-tag type-{{ item.bulletin_type }}">{{ item.get_bulletin_type_display }}</div>
+        <h4><a href="{{ item.get_absolute_url }}">{{ item.title }}</a></h4>
+        <p class="meta">{{ item.period_label }}{% if item.published_at %} · {{ item.published_at|date:'d/m/Y' }}{% endif %}</p>
+        <p>{{ item.summary|truncatechars:180 }}</p>
+        <div class="bulletin-actions">
+            <a href="{{ item.get_absolute_url }}">Chi tiết</a>
+            {% if item.file %}<a href="{{ item.file.url }}" target="_blank">Tệp đính kèm</a>{% endif %}
+        </div>
+    </article>
+    {% empty %}
+    <p>Không có bản tin phù hợp.</p>
+    {% endfor %}
+</div>
+{% endblock %}

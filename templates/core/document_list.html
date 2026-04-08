@@ -1,0 +1,22 @@
+{% extends 'core/base.html' %}
+{% block title %}Văn bản - Tài liệu | {{ site_settings.short_name|default:'NAWAPI' }}{% endblock %}
+{% block content %}
+<section class="page-header"><h2>Văn bản - Tài liệu</h2></section>
+<form method="get" class="search-form">
+    <input type="text" name="q" value="{{ query }}" placeholder="Tìm theo tiêu đề, mô tả hoặc danh mục...">
+    <button type="submit">Tìm kiếm</button>
+</form>
+<div class="document-table panel article-panel">
+    {% for doc in documents %}
+    <div class="document-row">
+        <div class="doc-date">{{ doc.published_at|date:'d/m/Y' }}</div>
+        <div class="doc-content">
+            <a href="{{ doc.file.url }}" target="_blank">{{ doc.title }}</a>
+            <p>{{ doc.category.name|default:'Tài liệu chung' }}{% if doc.description %} · {{ doc.description }}{% endif %}</p>
+        </div>
+    </div>
+    {% empty %}
+    <p>Không có tài liệu phù hợp.</p>
+    {% endfor %}
+</div>
+{% endblock %}

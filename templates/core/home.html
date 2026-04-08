@@ -1,0 +1,194 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}Trang chủ | {{ site_settings.short_name|default:'NAWAPI' }}{% endblock %}
+
+{% block hero %}
+<section class="portal-hero">
+    <div class="container hero-layout">
+        <div class="hero-left">
+            <p class="hero-kicker">CỔNG THÔNG TIN ĐIỆN TỬ</p>
+            <h2>{{ site_settings.hero_title|default:'Cổng thông tin điện tử tài nguyên nước' }}</h2>
+            <p class="hero-desc">{{ site_settings.hero_subtitle }}</p>
+            <div class="hero-actions">
+                <a class="button primary" href="{% url 'news_list' %}">Tin tức - sự kiện</a>
+                <a class="button" href="{% url 'bulletin_list' %}">Bản tin</a>
+            </div>
+            <div class="home-stats">
+                <div class="stat-box"><strong>{{ latest_news|length }}</strong><span>Tin tức cập nhật</span></div>
+                <div class="stat-box"><strong>{{ latest_documents|length }}</strong><span>Tài liệu công bố</span></div>
+                <div class="stat-box"><strong>{{ latest_bulletins|length }}</strong><span>Bản tin hiển thị</span></div>
+            </div>
+        </div>
+        <div class="hero-right">
+            {% if slides %}
+            <div class="slide-stack">
+                {% for slide in slides %}
+                <div class="slide-card {% if forloop.first %}active{% endif %}">
+                    <img src="{{ slide.image.url }}" alt="{{ slide.title }}">
+                    <div class="slide-overlay">
+                        <h3>{{ slide.title }}</h3>
+                        <p>{{ slide.subtitle }}</p>
+                        {% if slide.button_link %}<a href="{{ slide.button_link }}">{{ slide.button_text|default:'Xem thêm' }}</a>{% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="hero-logo-panel">
+                <img src="{% static 'images/logo.png' %}" alt="Logo">
+                <p>Thêm banner trong Admin để hiển thị slideshow trang chủ.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<section class="main-grid">
+    <div class="content-col">
+        <section class="panel portal-panel">
+            <div class="panel-heading blue"><h3>Tin nổi bật</h3><a href="{% url 'news_list' %}">Xem tất cả</a></div>
+            <div class="feature-news-grid">
+                {% for item in featured_news|default:latest_news %}
+                <article class="feature-news-card">
+                    {% if item.image %}<img src="{{ item.image.url }}" alt="{{ item.title }}">{% endif %}
+                    <div class="feature-news-body">
+                        <p class="meta">{{ item.published_at|date:'d/m/Y' }}</p>
+                        <h4><a href="{{ item.get_absolute_url }}">{{ item.title }}</a></h4>
+                        <p>{{ item.summary|truncatechars:150 }}</p>
+                    </div>
+                </article>
+                {% empty %}
+                <p>Chưa có tin tức. Vào /admin để thêm dữ liệu.</p>
+                {% endfor %}
+            </div>
+        </section>
+
+        <section class="panel portal-panel">
+            <div class="panel-heading gold"><h3>Bản tin tháng / mùa / năm / chuyên đề</h3><a href="{% url 'bulletin_list' %}">Kho bản tin</a></div>
+            <div class="bulletin-card-grid">
+                {% for item in featured_bulletins|default:latest_bulletins %}
+                <article class="bulletin-card">
+                    <div class="bulletin-tag type-{{ item.bulletin_type }}">{{ item.get_bulletin_type_display }}</div>
+                    <h4><a href="{{ item.get_absolute_url }}">{{ item.title }}</a></h4>
+                    <p class="meta">{{ item.period_label }}{% if item.published_at %} · {{ item.published_at|date:'d/m/Y' }}{% endif %}</p>
+                    <p>{{ item.summary|truncatechars:140 }}</p>
+                    <div class="bulletin-actions">
+                        <a href="{{ item.get_absolute_url }}">Chi tiết</a>
+                        {% if item.file %}<a href="{{ item.file.url }}" target="_blank">Tệp đính kèm</a>{% endif %}
+                    </div>
+                </article>
+                {% empty %}
+                <p>Chưa có bản tin. Vào /admin để thêm bản tin tháng, mùa, năm hoặc chuyên đề.</p>
+                {% endfor %}
+            </div>
+        </section>
+
+        <section class="panel portal-panel">
+            <div class="panel-heading"><h3>Sơ đồ tổ chức dạng khối</h3><a href="{% url 'structure' %}">Xem trang cơ cấu</a></div>
+            <div class="org-chart">
+                {% if director %}
+                <div class="org-chart-top">
+                    <div class="org-node main">
+                        <strong>{{ director.position }}</strong>
+                        <span>{{ director.full_name }}</span>
+                    </div>
+                </div>
+                {% endif %}
+                {% if deputies %}
+                <div class="org-chart-row three">
+                    {% for member in deputies %}
+                    <div class="org-node secondary">
+                        <strong>{{ member.position }}</strong>
+                        <span>{{ member.full_name }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                <div class="org-chart-row units">
+                    {% for unit in org_units %}
+                    <div class="org-node unit">
+                        <strong>{{ unit.name }}</strong>
+                        <small>{{ unit.scope|default:unit.unit_type }}</small>
+                    </div>
+                    {% empty %}
+                    <p>Chưa có dữ liệu cơ cấu tổ chức.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+
+        <section class="panel portal-panel">
+            <div class="panel-heading red"><h3>Văn bản - tài liệu mới ban hành</h3><a href="{% url 'document_list' %}">Kho tài liệu</a></div>
+            <div class="document-table">
+                {% for doc in latest_documents %}
+                <div class="document-row">
+                    <div class="doc-date">{{ doc.published_at|date:'d/m/Y' }}</div>
+                    <div class="doc-content">
+                        <a href="{{ doc.file.url }}" target="_blank">{{ doc.title }}</a>
+                        <p>{{ doc.category.name|default:'Tài liệu chung' }}{% if doc.description %} · {{ doc.description|truncatechars:120 }}{% endif %}</p>
+                    </div>
+                </div>
+                {% empty %}
+                <p>Chưa có tài liệu. Vào /admin để tải file PDF.</p>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+
+    <aside class="sidebar-col">
+        <section class="sidebar-panel important-panel">
+            <div class="sidebar-title">Thông báo nổi bật</div>
+            <ul class="notice-list">
+                {% for notice in featured_notices %}
+                <li>
+                    <span class="notice-date">{{ notice.published_at|date:'d/m' }}</span>
+                    <div>
+                        {% if notice.link %}<a href="{{ notice.link }}">{{ notice.title }}</a>{% else %}<strong>{{ notice.title }}</strong>{% endif %}
+                        <p>{{ notice.summary|truncatechars:90 }}</p>
+                    </div>
+                </li>
+                {% empty %}
+                <li>Chưa có thông báo nổi bật.</li>
+                {% endfor %}
+            </ul>
+        </section>
+
+        <section class="sidebar-panel">
+            <div class="sidebar-title">Lãnh đạo phụ trách từng mảng</div>
+            <div class="assignment-list compact">
+                {% for item in leadership_assignments %}
+                <div class="assignment-card">
+                    <h4>{{ item.title }}</h4>
+                    {% if item.lead %}<strong>{{ item.lead.full_name }}</strong><span>{{ item.lead.position }}</span>{% endif %}
+                    <p>{{ item.description|truncatechars:110 }}</p>
+                </div>
+                {% empty %}
+                <div class="assignment-card">Chưa có dữ liệu phân công lãnh đạo.</div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <section class="sidebar-panel">
+            <div class="sidebar-title">Liên kết nhanh</div>
+            <div class="link-grid">
+                {% for link in quick_links %}
+                <a href="{{ link.link }}">{{ link.title }}</a>
+                {% empty %}
+                <a href="/admin/">Cập nhật tại Admin</a>
+                {% endfor %}
+            </div>
+        </section>
+
+        <section class="sidebar-panel">
+            <div class="sidebar-title">Thông tin đơn vị</div>
+            <div class="unit-box">
+                <img src="{% static 'images/logo.png' %}" alt="logo">
+                <h4>{{ site_settings.short_name|default:'NAWAPI' }}</h4>
+                <p>{{ site_settings.intro|default:'Cập nhật thông tin giới thiệu đơn vị trong Admin.'|truncatechars:220 }}</p>
+            </div>
+        </section>
+    </aside>
+</section>
+{% endblock %}

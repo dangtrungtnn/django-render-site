@@ -1,0 +1,100 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ site_settings.short_name|default:'CB&DB TNN' }}{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <div class="gov-topline"></div>
+    <header class="site-header">
+        <div class="container header-main">
+            <a class="brand-wrap" href="/">
+                <img src="{% static 'images/logo.png' %}" alt="Logo NAWAPI" class="brand-logo">
+                <div class="brand-text">
+                    <p class="brand-ministry">{{ site_settings.ministry_name|default:'Bộ Nông nghiệp và Môi trường' }}</p>
+                    <h1 class="brand-title">{{ site_settings.unit_name|default:'Trung tâm Cảnh báo và Dự báo tài nguyên nước' }}</h1>
+                    <p class="brand-parent">Trực thuộc {{ site_settings.parent_unit|default:'Trung tâm Quy hoạch và Điều tra tài nguyên nước quốc gia' }}</p>
+                    <p class="brand-subtitle">{{ site_settings.portal_name|default:'Cổng thông tin điện tử' }}</p>
+                </div>
+            </a>
+            <div class="header-tools">
+                <div class="header-contact">
+                    <span>Hotline: {{ site_settings.hotline|default:'(024) 0000 0000' }}</span>
+                    <span>Email: {{ site_settings.email|default:'info@example.gov.vn' }}</span>
+                </div>
+                <a href="/admin/" class="admin-link">Đăng nhập quản trị</a>
+            </div>
+        </div>
+
+        <div class="notice-strip">
+            <div class="container notice-inner">
+                <strong>Thông báo:</strong>
+                <div class="notice-marquee">
+                    {% for notice in header_notices %}
+                        {% if notice.link %}
+                        <a href="{{ notice.link }}">{{ notice.title }}</a>
+                        {% else %}
+                        <span>{{ notice.title }}</span>
+                        {% endif %}
+                    {% empty %}
+                        <span>Chưa có thông báo nổi bật. Vào /admin để cập nhật.</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <nav class="main-nav">
+            <div class="container nav-inner">
+                <a href="/">Trang chủ</a>
+                <a href="{% url 'about' %}">Giới thiệu</a>
+                <a href="{% url 'structure' %}">Cơ cấu tổ chức</a>
+                <a href="{% url 'news_list' %}">Tin tức - Sự kiện</a>
+                <a href="{% url 'bulletin_list' %}">Bản tin</a>
+                <a href="{% url 'document_list' %}">Văn bản - Tài liệu</a>
+                <a class="external-link" href="https://giamsatdubaotainguyennuoc.wri.vn/dashboard" target="_blank" rel="noopener noreferrer">Giám sát tài nguyên nước</a>
+                <a href="{% url 'contact' %}">Liên hệ</a>
+            </div>
+        </nav>
+    </header>
+
+    {% block hero %}{% endblock %}
+
+    <main class="container page-shell">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-grid">
+            <div class="footer-panel">
+                <h3>{{ site_settings.unit_name|default:'Trung tâm Cảnh báo và Dự báo tài nguyên nước' }}</h3>
+                <p><strong>Cơ quan chủ quản:</strong> {{ site_settings.parent_unit|default:'Trung tâm Quy hoạch và Điều tra tài nguyên nước quốc gia' }}</p>
+                <p>{{ site_settings.footer_note|default:'Trang thông tin phục vụ công tác giới thiệu đơn vị, quản lý chuyên môn và công bố thông tin.' }}</p>
+                <p><strong>Địa chỉ:</strong> {{ site_settings.address|default:'Cập nhật trong mục Thông tin đơn vị' }}</p>
+                <p><strong>Điện thoại:</strong> {{ site_settings.hotline|default:'(024) 0000 0000' }}</p>
+                <p><strong>Email:</strong> {{ site_settings.email|default:'info@example.gov.vn' }}</p>
+            </div>
+            <div class="footer-panel">
+                <h3>Liên kết nhanh</h3>
+                <ul class="quick-links">
+                    {% for link in quick_links %}
+                    <li><a href="{{ link.link }}">{{ link.title }}</a></li>
+                    {% empty %}
+                    <li><a href="/admin/">Thêm liên kết nhanh trong Admin</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="footer-panel map-panel">
+                <h3>Bản đồ liên hệ</h3>
+                {% if site_settings.map_embed_url %}
+                <iframe src="{{ site_settings.map_embed_url }}" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                {% else %}
+                <div class="map-placeholder">Chưa cấu hình bản đồ. Vào Admin → Thông tin đơn vị để dán link Google Maps Embed.</div>
+                {% endif %}
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,23 @@
+{% extends 'core/base.html' %}
+{% block title %}Tin tức - Sự kiện | {{ site_settings.short_name|default:'NAWAPI' }}{% endblock %}
+{% block content %}
+<section class="page-header"><h2>Tin tức - Sự kiện</h2></section>
+<form method="get" class="search-form">
+    <input type="text" name="q" value="{{ query }}" placeholder="Tìm theo tiêu đề hoặc nội dung...">
+    <button type="submit">Tìm kiếm</button>
+</form>
+<div class="news-list-page">
+    {% for item in news_items %}
+    <article class="news-list-card{% if not item.image %} no-image{% endif %}">
+        {% if item.image %}<img src="{{ item.image.url }}" alt="{{ item.title }}">{% endif %}
+        <div class="news-card-body">
+            <p class="meta">{{ item.published_at|date:'d/m/Y' }}</p>
+            <h3><a href="{{ item.get_absolute_url }}">{{ item.title }}</a></h3>
+            <p>{{ item.summary|truncatechars:220 }}</p>
+        </div>
+    </article>
+    {% empty %}
+    <p>Không có kết quả phù hợp.</p>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends 'core/base.html' %}
+{% block title %}{{ item.title }} | {{ site_settings.short_name|default:'NAWAPI' }}{% endblock %}
+{% block content %}
+<article class="panel article-panel">
+    <p class="meta">{{ item.published_at|date:'d/m/Y' }}</p>
+    <h2>{{ item.title }}</h2>
+    {% if item.image %}<img class="detail-image" src="{{ item.image.url }}" alt="{{ item.title }}">{% endif %}
+    <div class="article-content">{{ item.content|linebreaks }}</div>
+</article>
+<section class="panel portal-panel">
+    <div class="panel-heading"><h3>Tin liên quan</h3></div>
+    <div class="related-grid">
+        {% for rel in related %}
+        <a href="{{ rel.get_absolute_url }}">{{ rel.title }}</a>
+        {% empty %}
+        <p>Chưa có tin liên quan.</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

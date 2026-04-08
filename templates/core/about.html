@@ -1,0 +1,33 @@
+{% extends 'core/base.html' %}
+{% block title %}Giới thiệu | {{ site_settings.short_name|default:'CB&DB TNN' }}{% endblock %}
+{% block content %}
+<section class="page-header"><h2>Giới thiệu</h2><p>Thông tin khái quát về đơn vị.</p></section>
+<section class="panel article-panel">
+    <h3>Giới thiệu chung</h3>
+    <p>{{ site_settings.intro|default:'Cập nhật nội dung giới thiệu đơn vị trong phần Admin.'|linebreaks }}</p>
+    <div class="article-two-col">
+        <div>
+            <h3>Chức năng, nhiệm vụ</h3>
+            <p>{{ site_settings.mission|default:'Cập nhật chức năng, nhiệm vụ tại mục Thông tin đơn vị trong Admin.'|linebreaks }}</p>
+        </div>
+        <div>
+            <h3>Định hướng hoạt động</h3>
+            <p>{{ site_settings.vision|default:'Cập nhật tầm nhìn và định hướng phát triển tại mục Thông tin đơn vị.'|linebreaks }}</p>
+        </div>
+    </div>
+</section>
+<section class="panel portal-panel">
+    <div class="panel-heading"><h3>Các phòng chuyên môn</h3></div>
+    <div class="org-unit-grid">
+        {% for unit in org_units %}
+        <article class="org-card">
+            <h4>{{ unit.name }}</h4>
+            <p class="meta">{{ unit.unit_type }}{% if unit.scope %} · {{ unit.scope }}{% endif %}</p>
+            <p>{{ unit.duties_summary|truncatechars:260 }}</p>
+        </article>
+        {% empty %}
+        <p>Chưa có dữ liệu phòng chuyên môn.</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}
